@@ -44,74 +44,102 @@
         <header class="bg-primary text-white p-6 flex flex-col md:flex-row justify-between items-center">
             <div>
                 <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-2 flex items-center">
-                    <i class="fa fa-gamepad mr-3"></i>五子棋
+                    <i class="fa fa-gamepad mr-3"></i>五子棋对战平台
                 </h1>
-                <p class="text-amber-100 text-sm md:text-base">经典五子棋游戏，黑白对弈，先连成五子获胜</p>
-            </div>
-            <div class="mt-4 md:mt-0 flex space-x-3">
-                <button id="restartBtn" class="bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-lg flex items-center btn-hover">
-                    <i class="fa fa-refresh mr-2"></i>重新开始
-                </button>
-                <button id="undoBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg flex items-center btn-hover">
-                    <i class="fa fa-undo mr-2"></i>悔棋
-                </button>
+                <p class="text-amber-100 text-sm md:text-base">在线匹配对手，实时对战</p>
             </div>
         </header>
 
         <!-- 游戏区域 -->
         <main class="p-6 flex flex-col md:flex-row gap-6">
-            <!-- 游戏信息 -->
-            <div class="w-full md:w-1/4 flex flex-col gap-4">
-                <div class="bg-gray-50 rounded-lg p-4 shadow-inner">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-3">游戏状态</h2>
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center">
-                            <div id="blackPlayer" class="w-6 h-6 rounded-full bg-black mr-2 piece-shadow"></div>
-                            <span class="text-gray-700">黑方</span>
+            <!-- 匹配界面 -->
+            <div id="matchmaking" class="w-full flex flex-col items-center justify-center py-16">
+                <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+                    <div class="mb-6">
+                        <div class="inline-block w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                            <i class="fa fa-users text-amber-500 text-4xl"></i>
                         </div>
-                        <div class="flex items-center">
-                            <div id="whitePlayer" class="w-6 h-6 rounded-full bg-white border border-gray-300 mr-2 piece-shadow"></div>
-                            <span class="text-gray-700">白方</span>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">寻找对手中</h2>
+                        <p class="text-gray-600 mb-6">正在为您匹配实力相当的对手</p>
+                    </div>
+                    
+                    <div class="relative w-full max-w-xs mx-auto mb-8">
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="matchProgress" class="h-full bg-amber-500 rounded-full transition-all duration-300" style="width: 30%"></div>
+                        </div>
+                        <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-white px-3 py-1 rounded-lg shadow-md">
+                            <span id="matchStatus" class="text-gray-700 font-medium">已找到0位玩家</span>
                         </div>
                     </div>
-                    <div id="status" class="text-center py-2 rounded bg-amber-50 text-primary font-medium">
-                        黑方先行
-                    </div>
-                </div>
-
-                <div class="bg-gray-50 rounded-lg p-4 shadow-inner">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-3">游戏规则</h2>
-                    <ul class="text-gray-600 space-y-2 text-sm">
-                        <li class="flex items-start">
-                            <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
-                            <span>黑白双方轮流在棋盘上落子</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
-                            <span>先在横、竖、斜方向形成五子连珠者获胜</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
-                            <span>点击棋盘交叉点放置棋子</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="bg-gray-50 rounded-lg p-4 shadow-inner">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-3">游戏记录</h2>
-                    <div id="moveHistory" class="text-gray-600 text-sm h-40 overflow-y-auto">
-                        <p class="italic text-gray-400">游戏开始</p>
+                    
+                    <div class="space-y-4">
+                        <button id="cancelMatchBtn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center btn-hover">
+                            <i class="fa fa-times mr-2"></i>取消匹配
+                        </button>
+                        <button id="backToLobbyBtn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-lg flex items-center justify-center btn-hover">
+                            <i class="fa fa-home mr-2"></i>返回大厅
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- 棋盘区域 -->
-            <div class="w-full md:w-3/4 flex justify-center">
-                <div class="relative">
-                    <div id="boardContainer" class="relative board-shadow rounded-lg overflow-hidden">
-                        <canvas id="boardCanvas" class="bg-board rounded-lg"></canvas>
-                        <div id="winLine" class="absolute top-0 left-0 w-full h-full pointer-events-none hidden">
-                            <div id="line" class="absolute bg-red-500/70 transform origin-left transition-all duration-300"></div>
+            <!-- 游戏界面 (默认隐藏) -->
+            <div id="gameInterface" class="w-full hidden">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- 游戏信息 -->
+                    <div class="w-full md:w-1/4 flex flex-col gap-4">
+                        <div class="bg-gray-50 rounded-lg p-4 shadow-inner">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-3">游戏状态</h2>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div id="blackPlayer" class="w-6 h-6 rounded-full bg-black mr-2 piece-shadow"></div>
+                                    <span class="text-gray-700">黑方</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div id="whitePlayer" class="w-6 h-6 rounded-full bg-white border border-gray-300 mr-2 piece-shadow"></div>
+                                    <span class="text-gray-700">白方</span>
+                                </div>
+                            </div>
+                            <div id="status" class="text-center py-2 rounded bg-amber-50 text-primary font-medium">
+                                黑方先行
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-4 shadow-inner">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-3">游戏规则</h2>
+                            <ul class="text-gray-600 space-y-2 text-sm">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>黑白双方轮流在棋盘上落子</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>先在横、竖、斜方向形成五子连珠者获胜</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                    <span>点击棋盘交叉点放置棋子</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-4 shadow-inner">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-3">游戏记录</h2>
+                            <div id="moveHistory" class="text-gray-600 text-sm h-40 overflow-y-auto">
+                                <p class="italic text-gray-400">游戏开始</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 棋盘区域 -->
+                    <div class="w-full md:w-3/4 flex justify-center">
+                        <div class="relative">
+                            <div id="boardContainer" class="relative board-shadow rounded-lg overflow-hidden">
+                                <canvas id="boardCanvas" class="bg-board rounded-lg"></canvas>
+                                <div id="winLine" class="absolute top-0 left-0 w-full h-full pointer-events-none hidden">
+                                    <div id="line" class="absolute bg-red-500/70 transform origin-left transition-all duration-300"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -120,7 +148,7 @@
 
         <!-- 游戏底部 -->
         <footer class="bg-gray-50 text-gray-600 p-4 text-center text-sm">
-            <p>© 2025 五子棋游戏 | 使用 HTML, CSS 和 JavaScript 开发</p>
+            <p>© 2025 五子棋对战平台 | 使用 HTML, CSS 和 JavaScript 开发</p>
         </footer>
     </div>
 
@@ -134,9 +162,12 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">游戏结束</h2>
                 <p id="winMessage" class="text-gray-600 text-lg mb-6">黑方获胜！</p>
             </div>
-            <div class="flex justify-center">
-                <button id="newGameBtn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg btn-hover">
-                    开始新游戏
+            <div class="flex justify-center space-x-4">
+                <button id="newMatchBtn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg btn-hover">
+                    再来一局
+                </button>
+                <button id="backBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-8 rounded-lg btn-hover">
+                    返回大厅
                 </button>
             </div>
         </div>
@@ -168,6 +199,14 @@
             const newGameBtn = document.getElementById('newGameBtn');
             const winLine = document.getElementById('winLine');
             const line = document.getElementById('line');
+            const matchmaking = document.getElementById('matchmaking');
+            const gameInterface = document.getElementById('gameInterface');
+            const matchProgress = document.getElementById('matchProgress');
+            const matchStatus = document.getElementById('matchStatus');
+            const cancelMatchBtn = document.getElementById('cancelMatchBtn');
+            const backToLobbyBtn = document.getElementById('backToLobbyBtn');
+            const newMatchBtn = document.getElementById('newMatchBtn');
+            const backBtn = document.getElementById('backBtn');
             
             // 设置画布尺寸
             canvas.width = CELL_SIZE * (BOARD_SIZE - 1);
@@ -177,11 +216,56 @@
             boardContainer.style.width = `${canvas.width}px`;
             boardContainer.style.height = `${canvas.height}px`;
             
+            // 模拟匹配进度
+            let matchProgressValue = 30;
+            let foundPlayers = 0;
+            let matchInterval;
+            
+            // 初始化匹配
+            function startMatchmaking() {
+                matchmaking.classList.remove('hidden');
+                gameInterface.classList.add('hidden');
+                
+                matchProgressValue = 30;
+                foundPlayers = 0;
+                matchProgress.style.width = `${matchProgressValue}%`;
+                matchStatus.textContent = `已找到${foundPlayers}位玩家`;
+                
+                // 模拟匹配过程
+                matchInterval = setInterval(() => {
+                    matchProgressValue += 10;
+                    matchProgress.style.width = `${matchProgressValue}%`;
+                    
+                    if (matchProgressValue >= 100) {
+                        clearInterval(matchInterval);
+                        matchStatus.textContent = '匹配成功！';
+                        
+                        // 延迟后进入游戏
+                        setTimeout(() => {
+                            matchmaking.classList.add('hidden');
+                            gameInterface.classList.remove('hidden');
+                            initializeBoard();
+                        }, 1000);
+                    } else {
+                        // 随机增加找到的玩家数
+                        if (Math.random() > 0.7) {
+                            foundPlayers++;
+                            matchStatus.textContent = `已找到${foundPlayers}位玩家`;
+                        }
+                    }
+                }, 800);
+            }
+            
             // 初始化棋盘
             function initializeBoard() {
+                gameBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
+                currentPlayer = 'black';
+                gameOver = false;
+                moveHistory = [];
                 drawBoard();
                 updateStatus();
                 moveHistoryElement.innerHTML = '<p class="italic text-gray-400">游戏开始</p>';
+                winLine.classList.add('hidden');
             }
             
             // 绘制棋盘
@@ -519,6 +603,31 @@
             });
             
             // 按钮事件监听
+            cancelMatchBtn.addEventListener('click', () => {
+                clearInterval(matchInterval);
+                matchmaking.classList.add('hidden');
+                // 这里应该显示大厅界面，为简化演示，直接开始新匹配
+                startMatchmaking();
+            });
+            
+            backToLobbyBtn.addEventListener('click', () => {
+                clearInterval(matchInterval);
+                matchmaking.classList.add('hidden');
+                // 这里应该显示大厅界面，为简化演示，直接开始新匹配
+                startMatchmaking();
+            });
+            
+            newMatchBtn.addEventListener('click', () => {
+                winModal.classList.add('hidden');
+                startMatchmaking();
+            });
+            
+            backBtn.addEventListener('click', () => {
+                winModal.classList.add('hidden');
+                // 这里应该显示大厅界面，为简化演示，直接开始新匹配
+                startMatchmaking();
+            });
+            
             restartBtn.addEventListener('click', resetGame);
             undoBtn.addEventListener('click', undoMove);
             newGameBtn.addEventListener('click', resetGame);
@@ -528,8 +637,8 @@
                 drawBoard();
             });
             
-            // 初始化游戏
-            initializeBoard();
+            // 开始匹配
+            startMatchmaking();
         });
     </script>
 </body>
