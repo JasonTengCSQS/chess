@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>象棋游戏</title>
+    <title>中国象棋</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
@@ -770,8 +770,18 @@
 
         // 开始匹配
         function startMatching() {
-            const username = document.getElementById('username').value.trim() || document.getElementById('overlayUsername').value.trim();
-            
+            // 优先获取当前可见的输入框内容
+            const overlayInput = document.getElementById('overlayUsername');
+            const mainInput = document.getElementById('username');
+            let username = '';
+
+            // 检查哪个输入框可见且有值
+            if (window.getComputedStyle(overlayInput).display !== 'none' && overlayInput.value.trim()) {
+                username = overlayInput.value.trim();
+            } else if (mainInput.value.trim()) {
+                username = mainInput.value.trim();
+            }
+
             if (!username) {
                 showNotification('请输入用户名！');
                 return;
@@ -779,6 +789,9 @@
             
             gameState.username = username;
             gameState.isMatching = true;
+            
+            // 显示匹配开始的提示
+            showNotification('正在寻找对手...');
             
             // 隐藏初始遮罩层
             document.getElementById('initialOverlay').classList.add('hidden');
@@ -812,9 +825,9 @@
                 }
             }, 1000);
             
-            // 模拟匹配过程
+            // 模拟匹配过程（3秒后80%概率匹配成功）
             setTimeout(() => {
-                if (Math.random() > 0.5 && secondsLeft > 0) {
+                if (Math.random() > 0.2 && secondsLeft > 0) {
                     // 匹配成功
                     clearInterval(gameState.matchTimer);
                     gameState.matchTimer = null;
@@ -829,7 +842,7 @@
                     // 开始游戏
                     startGame();
                 }
-            }, 5000); // 5秒后有50%的概率匹配成功
+            }, 3000);
         }
 
         // 开始人机对战
@@ -885,9 +898,13 @@
 
         // 显示通知
         function showNotification(message) {
+            // 移除已有的通知
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+            
             const notification = document.createElement('div');
             notification.textContent = message;
-            notification.classList.add('fixed', 'top-4', 'left-1/2', 'transform', '-translate-x-1/2', 'bg-primary', 'text-white', 'px-4', 'py-2', 'rounded-full', 'shadow-lg', 'z-50', 'transition-all', 'duration-500', 'opacity-0');
+            notification.classList.add('notification', 'fixed', 'top-4', 'left-1/2', 'transform', '-translate-x-1/2', 'bg-primary', 'text-white', 'px-4', 'py-2', 'rounded-full', 'shadow-lg', 'z-50', 'transition-all', 'duration-500', 'opacity-0');
             
             document.body.appendChild(notification);
             
@@ -1233,9 +1250,9 @@
             // 初始化棋盘（但不显示棋子）
             initializeBoard();
             
-            // 开始匹配按钮
-            document.getElementById('startBtn').addEventListener('click', startMatching);
+            // 强制绑定开始匹配按钮的点击事件
             document.getElementById('overlayStartBtn').addEventListener('click', startMatching);
+            document.getElementById('startBtn').addEventListener('click', startMatching);
             
             // 取消匹配按钮
             document.getElementById('cancelMatchingBtn').addEventListener('click', () => {
@@ -1414,4 +1431,3 @@
     </script>
 </body>
 </html>
-    
